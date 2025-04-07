@@ -1,0 +1,80 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>  // sleep() 함수를 사용하기 위해 필요합니다.
+#include <string.h>
+
+// 삼각형을 출력하는 함수
+void print_triangle() {
+    int size = 10;  // 삼각형의 크기
+
+    // 정직삼각형 출력
+    for (int i = 1; i <= size; i++) {
+        for (int j = 0; j < size - i; j++) {
+            printf(" ");
+        }
+        for (int j = 0; j < (2 * i - 1); j++) {
+            printf("*");
+        }
+        printf("\n");
+    }
+
+    // 역직삼각형 출력
+    for (int i = size - 1; i > 0; i--) {
+        for (int j = 0; j < size - i; j++) {
+            printf(" ");
+        }
+        for (int j = 0; j < (2 * i - 1); j++) {
+            printf("*");
+        }
+        printf("\n");
+    }
+}
+
+// 스플래시 화면 출력 함수
+void print_splash_screen(char date[], char name[]) {
+    printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+    printf("                         [마그라테아 ver 0.1]                              \n");
+    printf("           풀 한 포기 없는 황무지에서 반짝이는 행성을 만들내는 곳 마그라테아,  \n");
+    printf("         사람들이 보지 못하는 잠재력을 찾고 전문가의 손길을 더해 보석을 빗는 곳,\n");
+    printf("           마그라테아에 오신걸 환영합니다.                                  \n");
+    printf("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+    
+    // 날짜 형식 변경 (yyyy-mm-dd -> yyyy년 mm월 dd일)
+    printf("[사용자]: %s                                   [실행 시간]: %c%c%c%c년 %c%c월 %c%c일\n", 
+            name, date[0], date[1], date[2], date[3], date[5], date[6], date[8], date[9]);
+    printf("================================================================================\n");
+}
+
+int main() {
+    char date_input[11];  // 날짜 입력 (yyyy-mm-dd)
+    char name_input[50];  // 이름 입력
+
+    // 사용자 입력 받기
+    printf("[현재 날짜를 \"yyyy-mm-dd\" 형식으로 입력하세요]: ");
+    fgets(date_input, sizeof(date_input), stdin);
+    date_input[strcspn(date_input, "\n")] = '\0';  // 개행 문자 제거
+
+    printf("[당신의 이름을 입력하세요]: ");
+    fgets(name_input, sizeof(name_input), stdin);
+    name_input[strcspn(name_input, "\n")] = '\0';  // 개행 문자 제거
+
+    // 입력 확인 메시지
+    printf("**입력이 정상적으로 처리되었습니다.**\n");
+
+    // 3초 대기
+    sleep(3);  // sleep() 함수는 초 단위로 대기합니다.
+
+    // 화면 지우기
+    system("clear");  // UNIX 계열 시스템에서는 clear, Windows에서는 cls
+
+    // 삼각형 출력
+    print_triangle();
+
+    // 스플래시 화면 출력
+    print_splash_screen(date_input, name_input);
+
+    // 삼각형 출력
+    print_triangle();
+
+    return 0;
+}
