@@ -1,0 +1,152 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+// 후보자 정보를 저장할 구조체
+typedef struct {
+    char name[50];
+    char birth_date[11];
+    char gender;
+    char email[100];
+    char nationality[50];
+    float bmi;
+    char main_skill[50];
+    char sub_skill[50];
+    int topik_level;
+    char mbti[5];
+    char introduction[200];
+    int age; // 만 나이를 저장할 필드
+} MemberInfo;
+
+// 만 나이를 계산하는 함수
+int calculate_age(const char* birth_date) {
+    struct tm birth_tm = {0};
+    time_t current_time = time(NULL);
+    struct tm* current_tm = localtime(&current_time);
+
+    // 생일 정보 파싱 (YYYY/MM/DD 형식)
+    sscanf(birth_date, "%4d/%2d/%2d", &birth_tm.tm_year, &birth_tm.tm_mon, &birth_tm.tm_mday);
+
+    birth_tm.tm_year -= 1900; // 년도는 1900을 빼야 함
+    birth_tm.tm_mon -= 1;     // 월은 0부터 시작
+
+    // 현재 날짜와 비교하여 만 나이를 계산
+    int age = current_tm->tm_year + 1900 - birth_tm.tm_year;
+    if (current_tm->tm_mon < birth_tm.tm_mon || (current_tm->tm_mon == birth_tm.tm_mon && current_tm->tm_mday < birth_tm.tm_mday)) {
+        age--; // 생일이 지나지 않았다면 나이를 하나 빼야 함
+    }
+    return age;
+}
+
+// 오디션 후보자 정보를 입력받는 함수
+void input_candidate_info(MemberInfo* candidate, int candidate_number) {
+    printf("첫 번째 후보자의 정보를 입력합니다.\n");
+    printf("---------------------------------\n");
+
+    printf("1. 성명: ");
+    fgets(candidate->name, sizeof(candidate->name), stdin);
+    candidate->name[strcspn(candidate->name, "\n")] = '\0';  // 개행 문자 제거
+
+    printf("2. 생일(YYYY/MM/DD 형식): ");
+    fgets(candidate->birth_date, sizeof(candidate->birth_date), stdin);
+    candidate->birth_date[strcspn(candidate->birth_date, "\n")] = '\0';  // 개행 문자 제거
+
+    printf("3. 성별(여성이면 F 또는 남성이면 M): ");
+    scanf(" %c", &candidate->gender);  // 앞에 공백을 넣어 공백 문자를 처리함
+
+    getchar(); // 버퍼에 남은 개행 문자 제거
+
+    printf("4. 메일 주소: ");
+    fgets(candidate->email, sizeof(candidate->email), stdin);
+    candidate->email[strcspn(candidate->email, "\n")] = '\0';  // 개행 문자 제거
+
+    printf("5. 국적: ");
+    fgets(candidate->nationality, sizeof(candidate->nationality), stdin);
+    candidate->nationality[strcspn(candidate->nationality, "\n")] = '\0';  // 개행 문자 제거
+
+    printf("6. BMI: ");
+    scanf("%f", &candidate->bmi);
+
+    getchar(); // 버퍼에 남은 개행 문자 제거
+
+    printf("7. 주 스킬: ");
+    fgets(candidate->main_skill, sizeof(candidate->main_skill), stdin);
+    candidate->main_skill[strcspn(candidate->main_skill, "\n")] = '\0';  // 개행 문자 제거
+
+    printf("8. 보조 스킬: ");
+    fgets(candidate->sub_skill, sizeof(candidate->sub_skill), stdin);
+    candidate->sub_skill[strcspn(candidate->sub_skill, "\n")] = '\0';  // 개행 문자 제거
+
+    printf("9. 한국어 등급(TOPIK): ");
+    scanf("%d", &candidate->topik_level);
+
+    getchar(); // 버퍼에 남은 개행 문자 제거
+
+    printf("10. MBTI: ");
+    fgets(candidate->mbti, sizeof(candidate->mbti), stdin);
+    candidate->mbti[strcspn(candidate->mbti, "\n")] = '\0';  // 개행 문자 제거
+
+    printf("11. 소개: ");
+    fgets(candidate->introduction, sizeof(candidate->introduction), stdin);
+    candidate->introduction[strcspn(candidate->introduction, "\n")] = '\0';  // 개행 문자 제거
+
+    candidate->age = calculate_age(candidate->birth_date); // 나이 계산
+}
+
+// 후보자 정보를 출력하는 함수
+void print_candidate_info(const MemberInfo* candidate) {
+    // 한국어 등급을 출력 형식에 맞게 변환
+    char* topik_level_str;
+    switch (candidate->topik_level) {
+        case 0: topik_level_str = "원어민"; break;
+        case 1: topik_level_str = "초급"; break;
+        case 2: topik_level_str = "중급"; break;
+        case 3: topik_level_str = "고급"; break;
+        default: topik_level_str = "알 수 없음"; break;
+    }
+
+    // 후보자 정보를 출력
+    printf("%-10s | %-10s | %-4c | %-20s | %-5s | %-4.1f | %-6s | %-6s | %-6s | %-4s |\n",
+           candidate->name, candidate->birth_date, candidate->gender, candidate->email,
+           candidate->nationality, candidate->bmi, candidate->main_skill, candidate->sub_skill,
+           topik_level_str, candidate->mbti);
+    printf("---------------------------------------------------------------------------------------\n");
+    printf("%s\n", candidate->introduction);
+    printf("---------------------------------------------------------------------------------------\n");
+}
+
+int main() {
+    MemberInfo candidates[6];  // 6명의 후보자 정보를 저장하는 배열
+    char audition_group[50];   // 오디션 그룹명
+
+    // 오디션 그룹명 입력
+    printf("오디션 그룹명을 입력하세요: ");
+    fgets(audition_group, sizeof(audition_group), stdin);
+    audition_group[strcspn(audition_group, "\n")] = '\0';  // 개행 문자 제거
+
+    // 후보자 정보 입력
+    printf("\n####################################\n");
+    printf("[%s] 오디션 후보자 데이터 입력\n", audition_group);
+    printf("####################################\n");
+    for (int i = 0; i < 6; i++) {
+        printf("%d번째 후보자의 정보를 입력합니다.\n", i + 1);
+        printf("---------------------------------\n");
+        input_candidate_info(&candidates[i], i + 1);
+        printf("\n=================================\n");
+    }
+
+    // 후보자 정보 출력
+    printf("\n####################################\n");
+    printf("[%s] 오디션 후보자 데이터 조회\n", audition_group);
+    printf("####################################\n");
+    printf("=======================================================================================\n");
+    printf("성   명 | 생   일 | 성별 | 메   일            | 국적 | BMI | 주스킬 | 보조스킬 | TOPIK | MBTI |\n");
+    printf("=======================================================================================\n");
+
+    for (int i = 0; i < 6; i++) {
+        print_candidate_info(&candidates[i]);
+    }
+
+    return 0;
+}
