@@ -1,0 +1,129 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+// 후보자 데이터 구조 정의
+typedef struct {
+    char name[50];
+    char birth[11];
+    char gender;
+    char email[100];
+    char nationality[50];
+    float bmi;
+    char main_skill[50];
+    char sub_skill[50];
+    int korean_level;
+    char mbti[5];
+    char intro[500];
+} Candidate;
+
+// 만 나이 계산 함수
+int calculate_age(const char* birth_date) {
+    // 현재 날짜를 가져옴
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+
+    // 생일을 YYYY/MM/DD 형태로 파싱
+    int birth_year, birth_month, birth_day;
+    sscanf(birth_date, "%4d/%2d/%2d", &birth_year, &birth_month, &birth_day);
+
+    // 나이 계산 (현재 날짜와 생일을 비교)
+    int age = tm.tm_year + 1900 - birth_year;
+    if (tm.tm_mon + 1 < birth_month || (tm.tm_mon + 1 == birth_month && tm.tm_mday < birth_day)) {
+        age--; // 생일이 아직 지나지 않았다면 나이를 하나 빼야 함
+    }
+    return age;
+}
+
+int main() {
+    Candidate candidates[6];
+    char group_name[50];
+
+    // 오디션 그룹명 입력 받기
+    printf("오디션 그룹명을 입력하세요: ");
+    fgets(group_name, sizeof(group_name), stdin);
+    group_name[strcspn(group_name, "\n")] = '\0'; // 입력된 개행문자 제거
+
+    // 후보자 정보 입력 받기
+    for (int i = 0; i < 6; i++) {
+        printf("\n####################################\n");
+        printf("[%s] 오디션 후보자 데이터 입력\n", group_name);
+        printf("####################################\n");
+        printf("첫 번째 후보자의 정보를 입력합니다.\n");
+        printf("---------------------------------\n");
+
+        printf("1. 성명: ");
+        fgets(candidates[i].name, sizeof(candidates[i].name), stdin);
+        candidates[i].name[strcspn(candidates[i].name, "\n")] = '\0'; // 개행문자 제거
+
+        printf("2. 생일(YYYY/MM/DD 형식): ");
+        fgets(candidates[i].birth, sizeof(candidates[i].birth), stdin);
+        candidates[i].birth[strcspn(candidates[i].birth, "\n")] = '\0';
+
+        printf("3. 성별(여성이면 F 또는 남성이면 M): ");
+        scanf("%c", &candidates[i].gender);
+        getchar();  // 남은 개행문자 처리
+
+        printf("4. 메일 주소: ");
+        fgets(candidates[i].email, sizeof(candidates[i].email), stdin);
+        candidates[i].email[strcspn(candidates[i].email, "\n")] = '\0';
+
+        printf("5. 국적: ");
+        fgets(candidates[i].nationality, sizeof(candidates[i].nationality), stdin);
+        candidates[i].nationality[strcspn(candidates[i].nationality, "\n")] = '\0';
+
+        printf("6. BMI: ");
+        scanf("%f", &candidates[i].bmi);
+        getchar(); // 남은 개행문자 처리
+
+        printf("7. 주 스킬: ");
+        fgets(candidates[i].main_skill, sizeof(candidates[i].main_skill), stdin);
+        candidates[i].main_skill[strcspn(candidates[i].main_skill, "\n")] = '\0';
+
+        printf("8. 보조 스킬: ");
+        fgets(candidates[i].sub_skill, sizeof(candidates[i].sub_skill), stdin);
+        candidates[i].sub_skill[strcspn(candidates[i].sub_skill, "\n")] = '\0';
+
+        printf("9. 한국어 등급(TOPIK): ");
+        scanf("%d", &candidates[i].korean_level);
+        getchar(); // 남은 개행문자 처리
+
+        printf("10. MBTI: ");
+        fgets(candidates[i].mbti, sizeof(candidates[i].mbti), stdin);
+        candidates[i].mbti[strcspn(candidates[i].mbti, "\n")] = '\0';
+
+        printf("11. 소개: ");
+        fgets(candidates[i].intro, sizeof(candidates[i].intro), stdin);
+        candidates[i].intro[strcspn(candidates[i].intro, "\n")] = '\0';
+
+        printf("=================================\n");
+    }
+
+    // 후보자 정보 출력
+    printf("\n####################################\n");
+    printf("[%s] 오디션 후보자 데이터 조회\n", group_name);
+    printf("####################################\n");
+    printf("=============================================================================================\n");
+    printf("성   명 | 생   일 | 성별 | 메   일            | 국적 | BMI | 주스킬 | 보조스킬 | TOPIK | MBTI |\n");
+    printf("=============================================================================================\n");
+
+    for (int i = 0; i < 6; i++) {
+        int age = calculate_age(candidates[i].birth);
+        printf("%s(%d) | %s | %c   | %s | %s | %.1f | %s | %s | ", candidates[i].name, age, candidates[i].birth, candidates[i].gender, candidates[i].email, candidates[i].nationality, candidates[i].bmi, candidates[i].main_skill, candidates[i].sub_skill);
+        
+        // TOPIK 출력 (0일 경우 '원어민'으로 출력)
+        if (candidates[i].korean_level == 0) {
+            printf("원어민 | ");
+        } else {
+            printf("%d | ", candidates[i].korean_level);
+        }
+        
+        printf("%s |\n", candidates[i].mbti);
+        printf("--------------------------------------------------------------------------------------------\n");
+        printf("%s |\n", candidates[i].intro);
+        printf("--------------------------------------------------------------------------------------------\n");
+    }
+
+    return 0;
+}
